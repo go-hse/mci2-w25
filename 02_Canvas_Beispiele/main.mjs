@@ -1,4 +1,4 @@
-import { circle } from "./js/grafics.mjs"
+import { circle, line } from "./js/grafics.mjs"
 
 window.onload = () => {
     let cnv = document.getElementById("cnv");
@@ -18,25 +18,27 @@ window.onload = () => {
         ctx.resetTransform();
         ctx.clearRect(0, 0, cnv.width, cnv.height);
         ctx.fillStyle = "#f00";
-        ctx.translate(200, 300);
+        ctx.translate(300, 300);
 
         alpha += 0.01;
-        ctx.rotate(alpha);
+        ctx.rotate(alpha);  // Bogenmass
         ctx.fillRect(0, 0, rect_width, rect_height);
 
-        ctx.translate(0, 50);
+        ctx.translate(-rect_width / 2, -rect_height / 2);
         ctx.fillStyle = "#0f0";
         ctx.fillRect(0, 0, rect_width, rect_height);
 
         ctx.resetTransform();
         ctx.translate(cnv.width / 2, cnv.height / 2);
         ctx.fillStyle = "#00f";
-        ctx.translate(0, 50);
         ctx.rotate(alpha);
         ctx.translate(-rect_width / 2, -rect_height / 2);
         ctx.fillRect(0, 0, rect_width, rect_height);
 
-        ctx.scale(2, 2);
+
+        line(ctx, 0, 0, 200, 300, "#f00", 4);
+
+        // ctx.scale(2, 2);
         circle(ctx, 0, 0, 50, "#f00");
 
         window.requestAnimationFrame(draw);
