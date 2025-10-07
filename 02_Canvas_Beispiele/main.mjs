@@ -14,8 +14,16 @@ window.onload = () => {
     const rect_width = 200;
     const rect_height = 20;
 
+    let start = new Date();
+
     function draw() {
         ctx.resetTransform();
+
+        const now = new Date();
+        const delta = now - start;
+        start = now;
+
+        console.log("frames", 1000 / delta, delta);
         ctx.clearRect(0, 0, cnv.width, cnv.height);
         ctx.fillStyle = "#f00";
         ctx.translate(300, 300);
