@@ -12,6 +12,8 @@ export function circle(ctx, x, y, radius, color) {
 
 const fontSize = 12;
 
+
+// Item, das die aktuelle Größe anzeigt 
 export function InfoBox(ctx, width, height, info) {
     ctx.fillStyle = "#fff";
     ctx.strokeStyle = "#000";

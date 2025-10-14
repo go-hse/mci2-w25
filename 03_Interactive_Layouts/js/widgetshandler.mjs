@@ -1,5 +1,8 @@
 import { hasMethods } from "./utils.mjs"
 
+
+// Gibt Touch-Events an Widgets weiter
+
 export function WidgetsHandler(cnv) {
     const widgets = [];
 
@@ -32,10 +35,5 @@ export function WidgetsHandler(cnv) {
         }
     }
 
-    function draw() {
-        for (const widget of widgets) {
-            widget.draw()
-        }
-    }
-    return { addWidget, draw };
+    return { addWidget };
 }

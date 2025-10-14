@@ -19,24 +19,44 @@ function fullScreen(enabled) {
 }
 
 window.onload = () => {
+
+    // Canvas-Element und Context als API zum Zeichnen
     const cnv = document.getElementById("cnv");
     const ctx = cnv.getContext("2d");
 
+    // Widgets reagieren auf Touch-Events
     const widgets = WidgetsHandler(cnv);
-    const interactiveElement = Lines(ctx);
+    const interactiveLines = Lines(ctx);
+    const interactiveFingers = Fingers(ctx);
 
-    const greenButton = Button(ctx, () => { interactiveElement.setColor("#0f0") }, "Green", "#3f3", "#262");
-    const redButton = Button(ctx, () => { interactiveElement.setColor("#f00") }, "Red", "#f33", "#622");
+    const greenButton = Button(ctx, () => {
+        interactiveLines.setColor("#0f0")
+        interactiveFingers.setColor("#0f0")
+    }, "Green", "#3f3", "#262");
+    const redButton = Button(ctx, () => {
+        interactiveLines.setColor("#f00")
+        interactiveFingers.setColor("#f00")
+    }, "Red", "#f33", "#622");
+
+    const clearButton = Button(ctx, () => {
+        interactiveLines.clearLines();
+    }, "Clear", "#33f", "#226");
+
     const testCheckBox = Checkbox(ctx, fullScreen, "#aaa", "#ccc");
-    // const interactiveElement = Fingers(ctx);
 
     widgets.addWidget(greenButton);
     widgets.addWidget(redButton);
-    widgets.addWidget(testCheckBox);
-    widgets.addWidget(interactiveElement);
+    widgets.addWidget(clearButton);
 
+    widgets.addWidget(testCheckBox);
+    widgets.addWidget(interactiveLines);
+    widgets.addWidget(interactiveFingers);
+
+    // Layouts: steuern die Größen der Widgets im Fenster
     const mainLayout = VerticalLayout(ctx);
 
+    // resize: wird bei Größenänderungen des Fensters und initial aufgerufen
+    // setzt Größe des Haupt-Layouts
     function resize() {
         cnv.width = window.innerWidth;
         cnv.height = window.innerHeight;
@@ -45,23 +65,28 @@ window.onload = () => {
 
     addEventListener("resize", resize);
 
+    // 2 Layouts der 1. Hierarchieebene
     const menuLayout = HorizontalLayout();
-    const contentLayout = HorizontalLayout();
+    const contentLayout = ToggleLayout();
 
     mainLayout.addChild(menuLayout, 2.5);
     mainLayout.addChild(contentLayout, 10);
 
+    // Menü mit Uhr und Button-Layout
     menuLayout.addChild(DrawClock(ctx), 2);
     menuLayout.addChild(DrawInfo(ctx, "menu"), 9);
 
+    // Button-Layout schaltet zwischen Horizontal und Vertikal-Layout um
     const buttonLayout = ToggleLayout(1.5);
     buttonLayout.addChild(greenButton, 1);
     buttonLayout.addChild(redButton, 1);
+    buttonLayout.addChild(clearButton, 1);
     buttonLayout.addChild(testCheckBox, 2);
     menuLayout.addChild(buttonLayout, 2);
 
     // contentLayout.addChild(DrawPong(ctx, "content"), 1);
-    contentLayout.addChild(interactiveElement);
+    contentLayout.addChild(interactiveLines);
+    contentLayout.addChild(interactiveFingers);
 
     function draw() {
         ctx.resetTransform();

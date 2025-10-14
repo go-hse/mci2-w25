@@ -2,7 +2,7 @@ import { Item } from "./items.mjs";
 import { circle } from "./graphics.mjs";
 
 export function Fingers(ctx) {
-    let active, fingers = {};
+    let active, fingers = {}, color = "#f00";;
 
     const item = Item();
 
@@ -14,9 +14,13 @@ export function Fingers(ctx) {
         const { x, y, width, height } = item.get();
         ctx.fillStyle = "#fff";
         ctx.fillRect(x, y, width, height);
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x, y, width, height);
+
 
         for (const id in fingers) {
-            circle(ctx, fingers[id].x, fingers[id].y, 10, "#f00");
+            circle(ctx, fingers[id].x, fingers[id].y, 10, color);
         }
     }
 
@@ -34,5 +38,10 @@ export function Fingers(ctx) {
         }
     }
 
-    return { draw, isTouched, reset, move: isTouched, set };
+    function setColor(c) {
+        color = c;
+    }
+
+
+    return { draw, isTouched, reset, move: isTouched, set, setColor };
 }

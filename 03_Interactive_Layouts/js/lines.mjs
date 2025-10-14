@@ -1,13 +1,9 @@
 import { Item } from "./items.mjs";
 
 export function Lines(ctx) {
-    let active, lines = [], lineColor = "#f00";
+    let active, identifier, lines = [], lineColor = "#f00";
 
     const item = Item();
-
-    function set(nx, ny, nw, nh) {
-        item.set(nx, ny, nw, nh);
-    }
 
     function draw() {
         const { x, y, width, height } = item.get();
@@ -31,6 +27,7 @@ export function Lines(ctx) {
     function isTouched(id, tx, ty) {
         active = item.hit(tx, ty);
         if (active === true) {
+            identifier = id;
             lines.push({
                 x: tx,
                 y: ty,
@@ -41,14 +38,18 @@ export function Lines(ctx) {
     }
 
     function move(id, tx, ty) {
-        active = item.hit(tx, ty);
-        if (active === true) {
-            lines.push({
-                x: tx,
-                y: ty,
-                c: lineColor,
-                move: false
-            });
+        if (identifier === id) {
+            active = item.hit(tx, ty);
+            if (active === true) {
+                lines.push({
+                    x: tx,
+                    y: ty,
+                    c: lineColor,
+                    move: false
+                });
+            } else {
+                identifier = undefined;
+            }
         }
     }
 
@@ -56,7 +57,15 @@ export function Lines(ctx) {
         lineColor = c;
     }
 
-    function reset(id) { }
+    function clearLines() {
+        lines = [];
+    }
 
-    return { draw, isTouched, reset, move, set, setColor };
+    function reset(id) {
+        if (id === identifier) {
+            identifier = undefined;
+        }
+    }
+
+    return { draw, isTouched, reset, move, set: item.set, setColor, clearLines };
 }

@@ -9,7 +9,7 @@ export function getTime() {
     const now = new Date();
     const sec = now.getSeconds();
     const min = now.getMinutes();
-    const hrs = now.getHours();
+    let hrs = now.getHours();
     if (hrs >= 12) hrs -= 12;
     return {
         sec,
