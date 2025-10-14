@@ -31,10 +31,11 @@ export function InfoBox(ctx, width, height, info) {
 }
 
 export function Pong() {
-    const radius = 20;
-    let ballX = radius, ballY = radius, speedX = 5, speedY = 5;
+    let ballX = 10, ballY = 10, speedX = 5, speedY = 5;
 
     function draw(ctx, width, height) {
+        const min = width < height ? width : height;
+        const radius = min / 10;
         circle(ctx, ballX, ballY, radius, "#f00");
 
         ballX += speedX;

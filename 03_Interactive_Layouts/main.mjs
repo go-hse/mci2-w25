@@ -74,7 +74,7 @@ window.onload = () => {
 
     // Menü mit Uhr und Button-Layout
     menuLayout.addChild(DrawClock(ctx), 2);
-    menuLayout.addChild(DrawInfo(ctx, "menu"), 9);
+    menuLayout.addChild(DrawPong(ctx, "Pong"), 9);
 
     // Button-Layout schaltet zwischen Horizontal und Vertikal-Layout um
     const buttonLayout = ToggleLayout(1.5);
