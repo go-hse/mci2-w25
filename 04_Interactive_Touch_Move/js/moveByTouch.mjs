@@ -2,10 +2,10 @@ import { Item } from "./items.mjs";
 import { circle } from "./graphics.mjs";
 
 export function MoveByTouch(ctx, path) {
-    let active, identifier;
+    let f1, f2;
 
     const item = Item();
-    let localTransform, preTransform;
+    let localTransform, preTransform, initialDistance;
 
     function set(nx, ny, nw, nh) {
         item.set(nx, ny, nw, nh);
@@ -19,6 +19,11 @@ export function MoveByTouch(ctx, path) {
 
     function draw() {
         const { x, y, width, height } = item.get();
+        if (f1)
+            circle(ctx, f1.x, f1.y, 10, "#fff");
+
+        if (f2)
+            circle(ctx, f2.x, f2.y, 10, "#f0f");
 
         ctx.fillStyle = "#fee";
         ctx.strokeStyle = "#000";
@@ -26,7 +31,7 @@ export function MoveByTouch(ctx, path) {
         ctx.fillRect(x, y, width, height);
         ctx.strokeRect(x, y, width, height);
 
-        if (identifier !== undefined) {
+        if (f1) {
             fillPath(ctx, path, localTransform, "#e22121ff", "#000");
         } else {
             fillPath(ctx, path, localTransform, "#aaa", "#000");
@@ -35,33 +40,52 @@ export function MoveByTouch(ctx, path) {
 
     // wird im touchmove-Event aufgerufen
     function move(id, tx, ty) {
-        if (identifier === id) {
-            active = item.hit(tx, ty);
-            if (active) {
-                localTransform = transform(ctx, tx, ty).multiplySelf(preTransform);
-            }
-            else
-                identifier = undefined;
+        if (f1 && id === f1.id) {
+            f1.x = tx; f1.y = ty;
+        }
+        if (f2 && id === f2.id) {
+            f2.x = tx; f2.y = ty;
+        }
+
+        if (f1 && f2) {
+            // 2 Finger aktiv: nur Translation und Drehung
+            const currentDistance = distance(f1.x, f1.y, f2.x, f2.y);
+            const alpha = Math.atan2(f2.y - f1.y, f2.x - f1.x);
+            localTransform = transform(ctx, f1.x, f1.y, alpha, currentDistance / initialDistance).multiplySelf(preTransform); // L = Tn * P
+        } else if (f1) {
+            // nur 1 Finger aktiv Translation, keine Drehung
+            localTransform = transform(ctx, f1.x, f1.y, 0).multiplySelf(preTransform); // L = Tn * P
         }
     }
 
     // wird in touchstart-Event aufgerufen
     function isTouched(id, tx, ty) {
-        active = item.hit(tx, ty);
-        if (active) {
+        if (f1 === undefined) {
             const I = (new DOMMatrix(localTransform)).invertSelf();  // L-1
             const localTouch = I.transformPoint(new DOMPoint(tx, ty));
             const touchedState = ctx.isPointInPath(path, localTouch.x, localTouch.y);
             if (touchedState === true) {
-                identifier = id;
+                f1 = { id, x: tx, y: ty };
                 preTransform = transform(ctx, tx, ty).invertSelf().multiplySelf(localTransform);
+            }
+        } else {
+            if (f2 === undefined) {
+                f2 = { id, x: tx, y: ty };
+                initialDistance = distance(f1.x, f1.y, f2.x, f2.y);  // Skalierung
+                const alpha = Math.atan2(f2.y - f1.y, f2.x - f1.x);
+                preTransform = transform(ctx, f1.x, f1.y, alpha).invertSelf().multiplySelf(localTransform);  // Formel für P = Ti-1 Li
+
             }
         }
     }
 
     function reset(id) {
-        if (id === identifier) {
-            identifier = undefined;
+        if (f1 && id === f1.id) {
+            f1 = undefined; f2 = undefined;
+        }
+        if (f2 && id === f2.id) {
+            // weiter Bewegung möglich
+            f2 = undefined;
         }
     }
 
