@@ -86,6 +86,8 @@ export function MoveByTouch(ctx, path) {
         if (f2 && id === f2.id) {
             // weiter Bewegung möglich
             f2 = undefined;
+            preTransform = transform(ctx, f1.x, f1.y).invertSelf().multiplySelf(localTransform);  // Formel für P = Ti-1 Li
+
         }
     }
 
