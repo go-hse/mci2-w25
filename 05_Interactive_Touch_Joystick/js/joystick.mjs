@@ -78,7 +78,7 @@ export function Joystick(ctx) {
     }
 
     function move(id, tx, ty) {
-        if (initialTouch.id === id) {
+        if (initialTouch && initialTouch.id === id) {
             moveTouch = { id, tx, ty };
         }
     }

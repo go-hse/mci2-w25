@@ -7,21 +7,31 @@ import { Checkbox } from "./js/widgets.mjs";
 import { MoveByTwoFingers } from "./js/moveByTouchAndJoystick.mjs";
 import { fullScreenOnOff, fullScreenToggle } from "./js/fullscreen.mjs";
 import { createUpath } from "./js/graphics.mjs";
+import { initPhysics, arrow } from "./js/matter_physics.mjs";
 
-window.onload = () => {
+window.onload = async () => {
     // Canvas-Element und Context als API zum Zeichnen
     const cnv = document.getElementById("cnv");
     const ctx = cnv.getContext("2d");
 
-    // Widgets reagieren auf Touch-Events
-    const widgets = TouchHandler(cnv, fullScreenToggle(cnv));
+    const physics = await initPhysics(ctx);
+
+    const arrowBody = physics.addPath(arrow);
+    arrowBody.setPosRot(200, 0, 1);
+    const floor = physics.addRectangle(600, 10, true); // floor
+    floor.setPosRot(0, 600);
+
+
+    // Touchables reagieren auf Touch-Events
+    const touchables = TouchHandler(cnv, fullScreenToggle(cnv));
 
     const fullscreenCheckBox = Checkbox(ctx, fullScreenOnOff(cnv), "#aaa", "#ccc");
     // const interactiveObject = MoveByTouch(ctx, createUpath());
     const interactiveObject = MoveByTwoFingers(ctx, createUpath());
 
-    widgets.addTouchWidget(fullscreenCheckBox);
-    widgets.addTouchWidget(interactiveObject);
+    touchables.addTouchWidget(fullscreenCheckBox);
+    touchables.addTouchWidget(interactiveObject);
+    touchables.addTouchWidget(arrowBody);
 
     // Layouts: steuern die Größen der Widgets im Fenster
     const mainLayout = VerticalLayout(ctx);
@@ -56,6 +66,8 @@ window.onload = () => {
         ctx.clearRect(0, 0, cnv.width, cnv.height);
 
         mainLayout.draw();
+        physics.draw();
+
         window.requestAnimationFrame(draw);
     }
     resize();
