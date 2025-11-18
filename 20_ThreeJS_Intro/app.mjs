@@ -1,5 +1,6 @@
 import * as THREE from '../99_Lib/three.module.js';
 import { add } from './js/geometry.mjs';
+import { mouse } from './js/interaction2D.mjs';
 
 console.log("ThreeJs (local) " + THREE.REVISION);
 const width = window.innerWidth, height = window.innerHeight;
@@ -20,6 +21,8 @@ const light = new THREE.DirectionalLight(0xffffff);
 light.position.set(0, 2, 0);
 scene.add(light);
 
+const cursor = add(1, scene);
+mouse(cursor);
 
 const defaultCube = new THREE.Mesh(geometry, material);
 scene.add(defaultCube);
