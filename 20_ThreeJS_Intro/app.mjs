@@ -21,12 +21,23 @@ light.position.set(0, 2, 0);
 scene.add(light);
 
 
-const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+const defaultCube = new THREE.Mesh(geometry, material);
+scene.add(defaultCube);
+defaultCube.position.y = 0.2;
+defaultCube.position.z = -2;
 
-mesh.position.y = 0.2;
+let counter = 0, objects = [];
+for (let x = -1; x < 1; x += 0.3) {
+    for (let y = -1; y < 1; y += 0.3) {
+        const o = (++counter % 2 == 0) ? add(4, scene) : add(6, scene);
+        o.position.x = x;
+        o.position.y = y;
+        o.position.z = -2;
+        objects.push(o);
+    }
 
-add(4, scene);
+}
+
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
@@ -37,9 +48,14 @@ document.body.appendChild(renderer.domElement);
 
 function animate(time) {
 
-    mesh.rotation.x = time / 2000;
-    mesh.rotation.y = time / 1000;
+    defaultCube.rotation.x = time / 2000;
+    defaultCube.rotation.y = time / 1000;
 
+    for (const o of objects) {
+        o.rotation.x = time / 2000;
+        o.rotation.y = time / 1000;
+
+    }
     renderer.render(scene, camera);
 
 }
